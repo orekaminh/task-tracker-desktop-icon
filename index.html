@@ -59,7 +59,7 @@
     <h2 style="margin:0 0 10px 0;">Cài đặt Ứng dụng</h2>
     <p style="margin:0 0 20px 0; opacity:0.9; line-height:1.5;">Vui lòng cài đặt ứng dụng vào thiết bị<br>để trải nghiệm tốt nhất.</p>
     
-    <button id="btn-install" style="display:none; padding:14px 30px; font-size:16px; font-weight:bold; background:#fff; color:#6a1730; border:none; border-radius:30px; cursor:pointer; box-shadow:0 4px 15px rgba(0,0,0,0.2);">⬇️ Cài đặt ngay</button>
+    <button id="btn-install" disabled style="padding:14px 30px; font-size:16px; font-weight:bold; background:#e0e0e0; color:#888; border:none; border-radius:30px; cursor:not-allowed; box-shadow:0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease;">⏳ Đang chuẩn bị...</button>
     
     <div id="ios-instruction" style="display:none; background:rgba(255,255,255,0.1); padding:15px; border-radius:12px; margin-top:10px;">
         <div style="font-size:15px; margin-bottom:8px;">Trên iPhone/iPad:</div>
@@ -84,17 +84,28 @@
       var btnInstall = document.getElementById('btn-install');
       var deferredPrompt;
 
+      // Đăng ký Service Worker để ép Chrome hiện cài đặt ngay lập tức
+      if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('sw.js');
+      }
+
       if (!isStandalone) {
           installUi.style.display = 'flex';
+          
+          var isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
           
           window.addEventListener('beforeinstallprompt', function (e) {
               e.preventDefault();
               deferredPrompt = e;
-              btnInstall.style.display = 'block';
+              btnInstall.innerHTML = "⬇️ Cài đặt ngay";
+              btnInstall.style.background = "#fff";
+              btnInstall.style.color = "#6a1730";
+              btnInstall.style.cursor = "pointer";
+              btnInstall.disabled = false;
           });
 
-          var isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
           if (isIos && !window.navigator.standalone) {
+              btnInstall.style.display = 'none';
               document.getElementById('ios-instruction').style.display = 'block';
           }
 
