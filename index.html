@@ -38,14 +38,15 @@
        Lấy ở: Apps Script của khách → Triển khai → Quản lý bản triển khai → URL /exec.
        ════════════════════════════════════════════════════════════════ -->
   <script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const id = urlParams.get('id') || localStorage.getItem('khach_id');
-  if (id) {
-      localStorage.setItem('khach_id', id);
-      var APP_URL = "https://script.google.com/macros/s/" + id + "/exec";
-  } else {
-      alert("Đường link thiếu ID của bạn!");
-  }
+    var urlParams = new URLSearchParams(window.location.search);
+    var id = urlParams.get('id') || localStorage.getItem('khach_id');
+    var APP_URL = "";
+    if (id) {
+        localStorage.setItem('khach_id', id);
+        APP_URL = "https://script.google.com/macros/s/" + id + "/exec";
+    } else {
+        alert("Đường link thiếu ID của bạn!");
+    }
   </script>
 
   <div id="splash"><img src="icon.PNG" alt="Task Pro"><div class="spin"></div></div>
