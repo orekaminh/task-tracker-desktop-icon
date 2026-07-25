@@ -53,6 +53,22 @@
   <iframe id="app" title="Task Tracker Business" allow="clipboard-write; clipboard-read"></iframe>
   <div id="fallback"><a id="openDirect" target="_blank" rel="noopener">Không hiển thị được? Mở trực tiếp →</a></div>
 
+  <!-- Giao diện cài đặt khi mở trên trình duyệt -->
+  <div id="install-ui" style="display:none; position:fixed; inset:0; z-index:10; background:#6a1730; color:#fff; flex-direction:column; align-items:center; justify-content:center; padding:20px; text-align:center;">
+    <img src="icon.PNG" style="width:100px; height:100px; border-radius:22px; box-shadow:0 10px 30px rgba(0,0,0,0.3); margin-bottom:20px;">
+    <h2 style="margin:0 0 10px 0;">Cài đặt Ứng dụng</h2>
+    <p style="margin:0 0 20px 0; opacity:0.9; line-height:1.5;">Vui lòng cài đặt ứng dụng vào thiết bị<br>để trải nghiệm tốt nhất.</p>
+    
+    <button id="btn-install" style="display:none; padding:14px 30px; font-size:16px; font-weight:bold; background:#fff; color:#6a1730; border:none; border-radius:30px; cursor:pointer; box-shadow:0 4px 15px rgba(0,0,0,0.2);">⬇️ Cài đặt ngay</button>
+    
+    <div id="ios-instruction" style="display:none; background:rgba(255,255,255,0.1); padding:15px; border-radius:12px; margin-top:10px;">
+        <div style="font-size:15px; margin-bottom:8px;">Trên iPhone/iPad:</div>
+        <div style="font-size:14px; opacity:0.9;">1. Nhấn biểu tượng <b>Chia sẻ</b> (⍐) ở dưới cùng<br>2. Chọn <b>"Thêm vào MH chính"</b> (Add to Home Screen)</div>
+    </div>
+    
+    <button id="btn-continue" style="margin-top:30px; background:transparent; border:none; color:#fff; opacity:0.6; text-decoration:underline; cursor:pointer; font-size:14px;">Tiếp tục dùng trên trình duyệt (không cài)</button>
+  </div>
+
   <script>
     (function () {
       var f = document.getElementById("app"), splash = document.getElementById("splash");
@@ -61,6 +77,43 @@
       f.addEventListener("load", function () { splash.classList.add("hide"); });
       // Lưới an toàn: nếu iframe không bắn 'load' (vài trình duyệt), vẫn ẩn splash sau 6s.
       setTimeout(function () { splash.classList.add("hide"); }, 6000);
+
+      // --- Logic hiển thị màn hình cài đặt ---
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      var installUi = document.getElementById('install-ui');
+      var btnInstall = document.getElementById('btn-install');
+      var deferredPrompt;
+
+      if (!isStandalone) {
+          installUi.style.display = 'flex';
+          
+          window.addEventListener('beforeinstallprompt', function (e) {
+              e.preventDefault();
+              deferredPrompt = e;
+              btnInstall.style.display = 'block';
+          });
+
+          var isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+          if (isIos && !window.navigator.standalone) {
+              document.getElementById('ios-instruction').style.display = 'block';
+          }
+
+          btnInstall.addEventListener('click', function () {
+              if (deferredPrompt) {
+                  deferredPrompt.prompt();
+                  deferredPrompt.userChoice.then(function (choiceResult) {
+                      if (choiceResult.outcome === 'accepted') {
+                          installUi.style.display = 'none';
+                      }
+                      deferredPrompt = null;
+                  });
+              }
+          });
+
+          document.getElementById('btn-continue').addEventListener('click', function () {
+              installUi.style.display = 'none';
+          });
+      }
     })();
   </script>
 </body>
