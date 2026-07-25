@@ -37,7 +37,16 @@
        ⚙️ DÁN LINK /exec CỦA BẢN WEB APP VÀO ĐÂY (mỗi khách 1 link riêng).
        Lấy ở: Apps Script của khách → Triển khai → Quản lý bản triển khai → URL /exec.
        ════════════════════════════════════════════════════════════════ -->
-  <script>var APP_URL = "https://script.google.com/macros/s/AKfycbx0ffybXU_BGYPB1s9FkpZIws9ohq32jStXMhaRkEHKedrF2lxB6iAziHqsoYe_J8Wa/exec";</script>
+  <script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('id') || localStorage.getItem('khach_id');
+  if (id) {
+      localStorage.setItem('khach_id', id);
+      var APP_URL = "https://script.google.com/macros/s/" + id + "/exec";
+  } else {
+      alert("Đường link thiếu ID của bạn!");
+  }
+  </script>
 
   <div id="splash"><img src="icon.PNG" alt="Task Pro"><div class="spin"></div></div>
   <iframe id="app" title="Task Tracker Business" allow="clipboard-write; clipboard-read"></iframe>
