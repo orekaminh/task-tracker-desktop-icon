@@ -78,12 +78,20 @@
 
   <script>
     (function () {
-      var f = document.getElementById("app"), splash = document.getElementById("splash");
+      var f = document.getElementById("app"), 
+          splash = document.getElementById("splash"),
+          fallback = document.getElementById("fallback");
       document.getElementById("openDirect").href = APP_URL;
       f.src = APP_URL;
-      f.addEventListener("load", function () { splash.classList.add("hide"); });
+      f.addEventListener("load", function () { 
+        splash.classList.add("hide"); 
+        fallback.style.display = "none";
+      });
       // Lưới an toàn: nếu iframe không bắn 'load' (vài trình duyệt), vẫn ẩn splash sau 6s.
-      setTimeout(function () { splash.classList.add("hide"); }, 6000);
+      setTimeout(function () { 
+        splash.classList.add("hide"); 
+        fallback.style.display = "none";
+      }, 6000);
 
       // --- Logic hiển thị màn hình cài đặt ---
       var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
