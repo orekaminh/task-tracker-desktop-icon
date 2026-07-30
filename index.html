@@ -6,20 +6,22 @@
   <title>Task Tracker Business</title>
 
   <!-- PWA: icon đẹp + chạy toàn màn hình khi "Thêm vào màn hình chính" -->
+  <link rel="manifest" href="manifest.webmanifest" id="pwa-manifest">
   <script>
-    // iOS Safari bị lỗi rớt query param khi cài PWA bằng manifest tĩnh (do storage cô lập).
-    // Vì vậy chỉ gọi manifest tĩnh cho Android (để thoả điều kiện hiện nút Cài đặt của Chrome).
-    var isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-    if (!isIos) {
-      document.write('<link rel="manifest" href="manifest.webmanifest">');
-    }
-    
     // Bắt sự kiện cài đặt sớm nhất có thể
     window.globalDeferredPrompt = null;
     window.addEventListener('beforeinstallprompt', function(e) {
       e.preventDefault();
       window.globalDeferredPrompt = e;
     });
+
+    // iOS Safari bị lỗi rớt query param khi cài PWA bằng manifest tĩnh (do storage cô lập).
+    // Phải gỡ thẻ manifest ra khỏi DOM đối với iOS để Safari dùng URL hiện tại (có ?id=).
+    var isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+    if (isIos) {
+      var m = document.getElementById('pwa-manifest');
+      if (m) m.parentNode.removeChild(m);
+    }
   </script>
   <meta name="theme-color" content="#6a1730">
   <meta name="mobile-web-app-capable" content="yes">
