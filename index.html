@@ -13,6 +13,13 @@
     if (!isIos) {
       document.write('<link rel="manifest" href="manifest.webmanifest">');
     }
+    
+    // Bắt sự kiện cài đặt sớm nhất có thể
+    window.globalDeferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      window.globalDeferredPrompt = e;
+    });
   </script>
   <meta name="theme-color" content="#6a1730">
   <meta name="mobile-web-app-capable" content="yes">
@@ -114,12 +121,27 @@
           var isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
           var waitText = document.getElementById('wait-instruction');
           
-          window.addEventListener('beforeinstallprompt', function (e) {
-              e.preventDefault();
+          function onInstallReady(e) {
               deferredPrompt = e;
               waitText.style.display = 'none';
               btnInstall.style.display = 'block';
+          }
+
+          if (window.globalDeferredPrompt) {
+              onInstallReady(window.globalDeferredPrompt);
+          }
+          
+          window.addEventListener('beforeinstallprompt', function (e) {
+              e.preventDefault();
+              onInstallReady(e);
           });
+
+          // Timeout dự phòng: nếu sau 4 giây vẫn không có prompt (do đã cài rồi, hoặc trình duyệt chặn)
+          setTimeout(function() {
+              if (!deferredPrompt && !isIos) {
+                  waitText.innerHTML = '⚠️ Không tìm thấy nút cài đặt tự động.<br><br>Có thể bạn <b>đã cài đặt ứng dụng này rồi</b>, hoặc trình duyệt không hỗ trợ.<br>Bạn có thể tự cài bằng cách: Nhấn menu (<b>⋮</b>) ở góc trên bên phải → Chọn <b>"Cài đặt ứng dụng"</b>.';
+              }
+          }, 4000);
 
           if (isIos && !window.navigator.standalone) {
               waitText.style.display = 'none';
