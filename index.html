@@ -7,20 +7,12 @@
 
   <!-- PWA: icon đẹp + chạy toàn màn hình khi "Thêm vào màn hình chính" -->
   <script>
-    var iconUrl = new URL("icon.PNG", window.location.href).href;
-    var m = {
-      "id": window.location.pathname,
-      "name": "Task Tracker Business",
-      "short_name": "Task Biz",
-      "start_url": window.location.href,
-      "display": "standalone",
-      "background_color": "#6a1730",
-      "theme_color": "#6a1730",
-      "icons": [{ "src": iconUrl, "sizes": "192x192 512x512", "type": "image/png", "purpose": "any maskable" }]
-    };
-    var blob = new Blob([JSON.stringify(m)], { type: "application/json" });
-    var manifestURL = URL.createObjectURL(blob);
-    document.write('<link rel="manifest" href="' + manifestURL + '">');
+    // iOS Safari bị lỗi rớt query param khi cài PWA bằng manifest tĩnh (do storage cô lập).
+    // Vì vậy chỉ gọi manifest tĩnh cho Android (để thoả điều kiện hiện nút Cài đặt của Chrome).
+    var isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+    if (!isIos) {
+      document.write('<link rel="manifest" href="manifest.webmanifest">');
+    }
   </script>
   <meta name="theme-color" content="#6a1730">
   <meta name="mobile-web-app-capable" content="yes">
