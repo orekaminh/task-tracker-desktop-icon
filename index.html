@@ -7,16 +7,20 @@
 
   <!-- PWA: icon đẹp + chạy toàn màn hình khi "Thêm vào màn hình chính" -->
   <script>
+    var iconUrl = new URL("icon.PNG", window.location.href).href;
     var m = {
+      "id": window.location.pathname,
       "name": "Task Tracker Business",
       "short_name": "Task Biz",
       "start_url": window.location.href,
       "display": "standalone",
       "background_color": "#6a1730",
       "theme_color": "#6a1730",
-      "icons": [{ "src": "icon.PNG", "sizes": "192x192 512x512", "type": "image/png", "purpose": "any maskable" }]
+      "icons": [{ "src": iconUrl, "sizes": "192x192 512x512", "type": "image/png", "purpose": "any maskable" }]
     };
-    document.write('<link rel="manifest" href="data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(m)) + '">');
+    var blob = new Blob([JSON.stringify(m)], { type: "application/json" });
+    var manifestURL = URL.createObjectURL(blob);
+    document.write('<link rel="manifest" href="' + manifestURL + '">');
   </script>
   <meta name="theme-color" content="#6a1730">
   <meta name="mobile-web-app-capable" content="yes">
